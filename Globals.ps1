@@ -285,6 +285,29 @@ $Global:DisallowedGroups = @("Schema Admins",
 	"Enterprise Read-only Domain Controllers"
 )
 
+$CurrentUser = Get-ADUSer -Identity $ENV:USERNAME
+$CurrentUserDN = $CurrentUser.DistinguishedName
+$UserOU = [regex]::match($CurrentUserDN, '(?=OU)(.*\n?)(?<=.)').Value
+
+If (Test-Path -Path "C:\ProgramData\UserEditor\SearchBaseUsers.txt")
+{
+	$SearchBaseUsersArray = Get-Content -Path "C:\ProgramData\UserEditor\SearchBaseUsers.txt" -Raw | Select -First 1
+	$Global:SearchBaseUsers = $SearchBaseUsersArray
+}
+else
+{
+		$Global:SearchBaseUsers = $UserOU
+}
+
+If (Test-Path -Path "C:\ProgramData\UserEditor\SearchBaseGroups.txt")
+{
+	$SearchBaseGroupssArray = Get-Content -Path "C:\ProgramData\UserEditor\SearchBasegroups.txt" -Raw | Select -First 1
+	$Global:SearchBaseGroups = $SearchBaseGroupssArray
+}
+else
+{
+	$Global:SearchBaseGroups = $UserOU
+}
 
 $Global:cacheGroups = "$env:TEMP\Groups.txt"
 
