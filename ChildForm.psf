@@ -1525,7 +1525,7 @@ function ConvertTo-DataTable
 
 
 $formSearchUser_Load = {
-	$HideUsers = Get-Content "C:\ProgramData\TheLazyAdministrator\UserEditor\hideusers.txt"
+	$HideUsers = Get-Content "C:\ProgramData\UserEditor\hideusers.txt"
 	If ($AddUser -eq $true)
 	{
 		#Leave Blank
@@ -1546,7 +1546,7 @@ $buttonSearch_Click = {
 	If ($AddUser -eq $true)
 	{
 		$filter = "Name -like ""*$($textbox_SearchUser.Text)*"""
-		$AddUsers = Get-ADUser -Filter $filter -Properties * | Select-Object Name, Mail, UserPrincipalname, Enabled
+		$AddUsers = Get-ADUser -SearchBase $Global:SearchbaseUsers -Filter $filter -Properties * | Select-Object Name, Mail, UserPrincipalname, Enabled
 		If ($AddUsers.count -gt 1)
 		{
 			Update-DataGridView -DataGridView $datagridview1 -Item $AddUsers
@@ -1554,14 +1554,14 @@ $buttonSearch_Click = {
 		Else
 		{
 			$filter = "UserPrincipalName -eq""$($AddUsers.UserPrincipalName)"""
-			$Global:AddReportee = Get-ADUser -Filter $filter -Properties *
+			$Global:AddReportee = Get-ADUser -SearchBase $Global:SearchbaseUsers -Filter $filter -Properties *
 			$formSearchUser.Close()
 		}
 	}
 	Else
 	{
 		$filter = "Name -like ""*$($textbox_SearchUser.Text)*"""
-		$Global:Users = Get-ADUser -Filter $filter -Properties * | Select-Object Name, Mail, UserPrincipalname, Enabled
+		$Global:Users = Get-ADUser -SearchBase $Global:SearchbaseUsers -Filter $filter -Properties * | Select-Object Name, Mail, UserPrincipalname, Enabled
 		Update-DataGridView -DataGridView $datagridview1 -Item $Users
 	}
 }
@@ -1587,12 +1587,12 @@ $buttonOK_Click = {
 	ElseIf ($AddUser -eq $True)
 	{
 		$filter = "UserPrincipalName -eq""$SelectedUserUPN"""
-		$Global:AddReportee = Get-ADUser -Filter $filter -Properties *
+		$Global:AddReportee = Get-ADUser -SearchBase $Global:SearchbaseUsers -Filter $filter -Properties *
 	}
 	Else
 	{
 		$filter = "UserPrincipalName -eq""$SelectedUserUPN"""
-		$Global:Users = Get-ADUser -Filter $filter -Properties *
+		$Global:Users = Get-ADUser -SearchBase $Global:SearchbaseUsers -Filter $filter -Properties *
 		Reset-Form
 		Show-UserInfo -User $Users
 	}
