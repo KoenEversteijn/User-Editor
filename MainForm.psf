@@ -3250,9 +3250,9 @@ function Update-ComboBox
 
 
 $MainForm_Load = {
-	If (Test-Path -Path "C:\ProgramData\TheLazyAdministrator\UserEditor\programname.txt")
+	If (Test-Path -Path "C:\ProgramData\UserEditor\programname.txt")
 	{
-		$Name = Get-Content -Path "C:\ProgramData\TheLazyAdministrator\UserEditor\programname.txt"
+		$Name = Get-Content -Path "C:\ProgramData\UserEditor\programname.txt"
 		$MainForm.Text = $Name
 	}
 	
@@ -3282,7 +3282,7 @@ $MainForm_Load = {
 }
 
 $buttonSearch_Click = {
-	$HideUsers = Get-Content "C:\ProgramData\TheLazyAdministrator\UserEditor\hideusers.txt"
+	$HideUsers = Get-Content "C:\ProgramData\UserEditor\hideusers.txt"
 	[System.Int32]$stop = 0
 	If ($textbox_searchUsers.Text -eq "")
 	{
@@ -3293,10 +3293,11 @@ $buttonSearch_Click = {
 	Else
 	{
 		$filter = "Name -like ""*$($textbox_searchUsers.Text)*"""
-		$Global:Users = Get-ADUser -Filter $filter -Properties *
+		$Global:Users = Get-ADUser -SearchBase $Global:SearchBaseUsers -Filter $filter -Properties *
 		foreach ($i in $HideUsers)
 		{
-			$Global:Users = $Users | Where-Object { $_.UserPrincipalName -ne $i } 
+			$Global:Users = $Users | Where-Object { ($_.Name -ne $i) -and ($_.UserPrincipalName -ne $i) -and ($_.SamAccountName -ne $i)}
+
 		}
 		
 		If ($Users.Count -gt 1)
@@ -3884,7 +3885,7 @@ Timestamp: $Timestamp
 			}
 			
 			
-			$filter = "UserPrincipalName -like ""*$($Users.UserPrincipalName)*"""
+			$filter = "UserPrincipalName -eq ""$($Users.UserPrincipalName)"""
 			$Global:Users = Get-ADUser -Filter $filter -Properties *
 			Show-UserInfo -User $Users
 			Write-Log -text "Done!"
@@ -3935,16 +3936,16 @@ $button_ClearManager_Click = {
 }
 
 $aboutToolStripMenuItem1_Click = {
-	If (Test-Path -Path "C:\ProgramData\TheLazyAdministrator\UserEditor\customhelp.txt")
+	If (Test-Path -Path "C:\ProgramData\UserEditor\customhelp.txt")
 	{
-		$CustomInfo = Get-Content "C:\ProgramData\TheLazyAdministrator\UserEditor\customhelp.txt"
+		$CustomInfo = Get-Content "C:\ProgramData\UserEditor\customhelp.txt"
 		If ($null -eq $CustomInfo)
 		{
 			[System.Windows.Forms.MessageBox]::Show($About, 'Information', 'OK', 'Information')
 		}
 		Else
 		{
-			$CustomInfo = (Get-Content "C:\ProgramData\TheLazyAdministrator\UserEditor\customhelp.txt") -join "`n"
+			$CustomInfo = (Get-Content "C:\ProgramData\UserEditor\customhelp.txt") -join "`n"
 			[System.Windows.Forms.MessageBox]::Show($CustomInfo, 'Information', 'OK', 'Information')
 		}
 	}
