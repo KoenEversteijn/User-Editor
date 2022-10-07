@@ -1897,7 +1897,8 @@ h7t1FzxCD8uzFavVJfaebembn3+hnc9+uP7f8p//H2d9gsWYOwIA</Form>
 	If ($Global:ManagerProperties -eq 1)
 	{
 		$filter = "Name -like ""*$($textbox_Manager.Text)*"""
-		$ViewUser = Get-ADUser -Filter $filter -Properties *
+		$ViewUser = Get-ADUser -SearchBase $Global:SearchbaseUsers -Filter $filter -Properties *
+
 		If ($ViewUser.Count -gt 1)
 		{
 			$ViewUser = $ViewUser | Where-Object { $_.Manager -eq $Global:User.Name } | Select-Object -First 1
